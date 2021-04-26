@@ -76,7 +76,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   @doc """
   Provides the authorize url for the request phase of Ueberauth. No need to call this usually.
   """
-  def authorize_url!(params \\ [], opts \\ []) do
+  def authorize_url!(conn, params \\ [], opts \\ []) do
     conn
     |> client(opts)
     |> Client.authorize_url!(params)
