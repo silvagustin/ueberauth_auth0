@@ -24,8 +24,9 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   alias OAuth2.Client
   alias OAuth2.Strategy.AuthCode
 
-  def options(otp_app) do
+  def options(conn, otp_app) do
     configs = Application.get_env(otp_app || :ueberauth, Ueberauth.Strategy.Auth0.OAuth)
+    configs = compute_configs(conn, configs)
 
     unless configs do
       raise(
@@ -63,29 +64,30 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   This will be setup automatically for you in `Ueberauth.Strategy.Auth0`.
   These options are only useful for usage outside the normal callback phase of Ueberauth.
   """
-  def client(opts \\ []) do
-    opts
-    |> Keyword.get(:otp_app)
-    |> options()
+  def client(conn, opts \\ []) do
+    otp_app = Keyword.get(opts, :otp_app)
+
+    conn
+    |> options(otp_app)
     |> Keyword.merge(opts)
-    |> Client.new()
+    |> Client.new
   end
 
   @doc """
   Provides the authorize url for the request phase of Ueberauth. No need to call this usually.
   """
   def authorize_url!(params \\ [], opts \\ []) do
-    opts
-    |> client
+    conn
+    |> client(opts)
     |> Client.authorize_url!(params)
   end
 
-  def get_token!(params \\ [], opts \\ []) do
+  def get_token!(conn, params \\ [], opts \\ []) do
     otp_app = Keyword.get(opts, :otp_app)
 
     client_secret =
-      otp_app
-      |> options()
+      conn
+      |> options(otp_app)
       |> Keyword.get(:client_secret)
 
     params = Keyword.merge(params, client_secret: client_secret)
@@ -114,4 +116,25 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
 
   defp get_config_value({:system, value}), do: System.get_env(value)
   defp get_config_value(value), do: value
+
+  defp compute_configs(conn, configs) do
+    case conn do
+      %Plug.Conn{} = conn ->
+        with module when is_atom(module) <- Keyword.get(configs, :config_from),
+             true <- function_exported?(module, :get_domain, 1),
+             true <- function_exported?(module, :get_client_id, 1),
+             true <- function_exported?(module, :get_client_secret, 1)
+        do
+          configs |> Keyword.merge([
+            domain: apply(module, :get_domain, [conn]),
+            client_id: apply(module, :get_client_id, [conn]),
+            client_secret: apply(module, :get_client_secret, [conn])
+          ])
+        else
+          _ -> configs
+        end
+      _ ->
+        configs
+    end
+  end
 end
