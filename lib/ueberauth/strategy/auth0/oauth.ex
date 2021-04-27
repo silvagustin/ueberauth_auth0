@@ -138,7 +138,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
 
   defp compute_configs(conn, configs) do
     case conn do
-      %Plug.Conn{} = conn ->
+      %Plug.Conn{} = conn when not is_nil(configs) ->
         with module when is_atom(module) <- Keyword.get(configs, :config_from),
              true <- function_exported?(module, :get_domain, 1),
              true <- function_exported?(module, :get_client_id, 1),
