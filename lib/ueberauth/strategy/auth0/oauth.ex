@@ -13,6 +13,25 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
         client_id: {:system, "AUTH0_CLIENT_ID"},
         client_secret: {:system, "AUTH0_CLIENT_SECRET"}
 
+  Or using a computed configuration:
+
+      defmodule MyApp.ConfigFrom do
+        def get_domain(%Plug.Conn{} = conn) do
+          ...
+        end
+
+        def get_client_id(%Plug.Conn{} = conn) do
+          ...
+        end
+
+        def get_client_secret(%Plug.Conn{} = conn) do
+          ...
+        end
+      end
+
+      config :ueberauth, Ueberauth.Strategy.Auth0.OAuth,
+        config_from: MyApp.ConfigFrom
+
   The JSON serializer used is the same as `Ueberauth` so if you need to
   customize it, you can configure it in the `Ueberauth` configuration:
 
