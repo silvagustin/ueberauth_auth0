@@ -32,7 +32,9 @@ defmodule UeberauthAuth0.Mixfile do
       # Type checking
       dialyzer: [
         plt_core_path: "_build/#{Mix.env()}"
-      ]
+      ],
+
+      aliases: aliases()
     ]
   end
 
@@ -51,8 +53,8 @@ defmodule UeberauthAuth0.Mixfile do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
 
       # Testing:
-      {:exvcr, "~> 0.10", only: :test},
-      {:excoveralls, "~> 0.11", only: :test},
+      {:exvcr, "~> 0.10", only: [:test, :test_with_config_from]},
+      {:excoveralls, "~> 0.11", only: [:test, :test_with_config_from]},
 
       # Type checking
       {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false},
@@ -88,5 +90,26 @@ defmodule UeberauthAuth0.Mixfile do
         GitHub: @source_url
       }
     ]
+  end
+
+  defp aliases do
+    [
+      {:"test.all", [&run_tests/1, &run_tests_with_config_from/1]}
+    ]
+  end
+
+  defp run_tests(_) do
+    Mix.shell.cmd(
+      "mix test --color",
+      env: [{"MIX_ENV", "test"}]
+    )
+  end
+
+  defp run_tests_with_config_from(_) do
+    IO.puts "\nRunning tests with configurations loaded from a config_from.exs file."
+    Mix.shell.cmd(
+      "mix test --color",
+      env: [{"MIX_ENV", "test_with_config_from"}]
+    )
   end
 end

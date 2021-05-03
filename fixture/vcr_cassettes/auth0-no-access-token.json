@@ -1,0 +1,47 @@
+[
+  {
+    "request": {
+      "body": "client_id=clientidsomethingrandom&client_secret=clientsecret-somethingsecret&code=some_code&grant_type=authorization_code&redirect_uri=http%3A%2F%2Fwww.example.com%2Fauth%2Fauth0%2Fcallback",
+      "headers": {
+        "content-type": "application/x-www-form-urlencoded",
+        "accept": "application/json",
+        "authorization": "Basic Y2xpZW50aWRzb21ldGhpbmdyYW5kb206Y2xpZW50c2VjcmV0LXNvbWV0aGluZ3NlY3JldA=="
+      },
+      "method": "post",
+      "options": [],
+      "request_body": "",
+      "url": "https://example-app.auth0.com/oauth/token"
+    },
+    "response": {
+      "binary": false,
+      "body": "{\"error\":\"access_denied\",\"error_description\":\"Unauthorized\"}",
+      "headers": {
+        "Date": "Mon, 03 May 2021 18:54:45 GMT",
+        "Content-Type": "application/json",
+        "Content-Length": "60",
+        "Connection": "keep-alive",
+        "Set-Cookie": "__cfduid=d0e52c40acdb776b1dc988968dab85ca41620068084; expires=Wed, 02-Jun-21 18:54:44 GMT; path=/; domain=.auth0.com; HttpOnly; SameSite=Lax; Secure",
+        "CF-Ray": "649bb31a786808e1-EZE",
+        "Cache-Control": "private, no-store, no-cache, must-revalidate, post-check=0, pre-check=0, no-transform",
+        "Strict-Transport-Security": "max-age=31536000",
+        "Vary": "Origin",
+        "CF-Cache-Status": "DYNAMIC",
+        "cf-request-id": "09d52e448b000008e16a199000000001",
+        "Expect-CT": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"",
+        "ot-baggage-auth0-request-id": "649bb31a786808e1",
+        "ot-tracer-sampled": "true",
+        "ot-tracer-spanid": "174cc4421d8ad512",
+        "ot-tracer-traceid": "4a44f1e07c186146",
+        "X-Auth0-RequestId": "fe9866f4ecfb2e3e79c9",
+        "X-Content-Type-Options": "nosniff",
+        "X-RateLimit-Limit": "30",
+        "X-RateLimit-Remaining": "29",
+        "X-RateLimit-Reset": "1620068086",
+        "Server": "cloudflare",
+        "alt-svc": "h3-27=\":443\"; ma=86400, h3-28=\":443\"; ma=86400, h3-29=\":443\"; ma=86400"
+      },
+      "status_code": 401,
+      "type": "ok"
+    }
+  }
+]
