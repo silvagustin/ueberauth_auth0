@@ -7,7 +7,7 @@ config :ueberauth, Ueberauth,
   ]
 
 config :ueberauth, Ueberauth.Strategy.Auth0.OAuth,
-  config_from: Ueberauth.ConfigFrom
+  config_from: Ueberauth.Support.ConfigFrom
 
 config :exvcr,
   vcr_cassette_library_dir: "test/fixtures/vcr_cassettes"

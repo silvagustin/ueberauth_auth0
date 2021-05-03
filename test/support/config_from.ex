@@ -1,4 +1,4 @@
-defmodule Ueberauth.ConfigFrom do
+defmodule Ueberauth.Support.ConfigFrom do
   def get_client_id(%Plug.Conn{} = _conn), do: "clientidsomethingrandom"
 
   def get_client_secret(%Plug.Conn{} = _conn), do: "clientsecret-somethingsecret"

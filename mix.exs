@@ -34,7 +34,8 @@ defmodule UeberauthAuth0.Mixfile do
         plt_core_path: "_build/#{Mix.env()}"
       ],
 
-      aliases: aliases()
+      aliases: aliases(),
+      elixirc_paths: elixirc_paths(Mix.env)
     ]
   end
 
@@ -99,6 +100,12 @@ defmodule UeberauthAuth0.Mixfile do
   end
 
   defp run_tests(_) do
+    IO.puts("""
+    \n#
+    # Running tests with DEFAULT configurations.
+    #\n
+    """)
+
     Mix.shell.cmd(
       "mix test --color",
       env: [{"MIX_ENV", "test"}]
@@ -106,10 +113,18 @@ defmodule UeberauthAuth0.Mixfile do
   end
 
   defp run_tests_with_config_from(_) do
-    IO.puts "\nRunning tests with configurations loaded from a config_from.exs file."
+    IO.puts("""
+    \n#
+    # Running tests with COMPUTED configurations.
+    #\n
+    """)
+
     Mix.shell.cmd(
       "mix test --color",
       env: [{"MIX_ENV", "test_with_config_from"}]
     )
   end
+
+  defp elixirc_paths(:test_with_config_from), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end
