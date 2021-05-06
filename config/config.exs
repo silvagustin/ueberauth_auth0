@@ -28,14 +28,4 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
-
-case Mix.env do
-  :test ->
-    import_config "test.exs"
-
-  :test_with_config_from ->
-    import_config "test_with_config_from.exs"
-
-  _ ->
-    nil
-end
+if Mix.env() == :test, do: import_config("test.exs")
