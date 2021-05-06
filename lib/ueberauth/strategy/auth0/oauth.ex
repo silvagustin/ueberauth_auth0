@@ -139,8 +139,9 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
 
   defp compute_configs(conn, configs) do
     case conn do
-      %Plug.Conn{} = conn when is_nil(configs) ->
-        with module when is_atom(module) <- Keyword.get(configs, :config_from),
+      %Plug.Conn{} = conn when not is_nil(configs) ->
+        with module when not is_nil(module) <-
+               Keyword.get(configs, :config_from),
              {:exported, true} <- {:exported, function_exported?(module, :get_domain, 1)},
              {:exported, true} <- {:exported, function_exported?(module, :get_client_id, 1)},
              {:exported, true} <- {:exported, function_exported?(module, :get_client_secret, 1)} do
@@ -159,10 +160,12 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
             - `get_client_secret/1`
             """)
 
+          # Used base configuration.
           _ ->
             configs
         end
 
+      # Both configurations weren't found.
       _ ->
         configs
     end
