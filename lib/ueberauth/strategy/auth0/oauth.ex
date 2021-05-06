@@ -89,7 +89,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
     conn
     |> options(otp_app)
     |> Keyword.merge(opts)
-    |> Client.new
+    |> Client.new()
   end
 
   @doc """
@@ -138,20 +138,30 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
 
   defp compute_configs(conn, configs) do
     case conn do
-      %Plug.Conn{} = conn when not is_nil(configs) ->
+      %Plug.Conn{} = conn when is_nil(configs) ->
         with module when is_atom(module) <- Keyword.get(configs, :config_from),
-             true <- function_exported?(module, :get_domain, 1),
-             true <- function_exported?(module, :get_client_id, 1),
-             true <- function_exported?(module, :get_client_secret, 1)
-        do
-          configs |> Keyword.merge([
+             {:exported, true} <- {:exported, function_exported?(module, :get_domain, 1)},
+             {:exported, true} <- {:exported, function_exported?(module, :get_client_id, 1)},
+             {:exported, true} <- {:exported, function_exported?(module, :get_client_secret, 1)} do
+          configs
+          |> Keyword.merge(
             domain: apply(module, :get_domain, [conn]),
             client_id: apply(module, :get_client_id, [conn]),
             client_secret: apply(module, :get_client_secret, [conn])
-          ])
+          )
         else
-          _ -> configs
+          {:exported, false} ->
+            raise("""
+            When using `:from_config`, the given module should export 3 functions:
+            - `get_domain/1`
+            - `get_client_id/1`
+            - `get_client_secret/1`
+            """)
+
+          _ ->
+            configs
         end
+
       _ ->
         configs
     end
