@@ -43,7 +43,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   alias OAuth2.Client
   alias OAuth2.Strategy.AuthCode
 
-  def options(conn, otp_app) do
+  def options(otp_app, conn) do
     configs = Application.get_env(otp_app || :ueberauth, Ueberauth.Strategy.Auth0.OAuth)
     configs = compute_configs(conn, configs)
 
@@ -83,11 +83,11 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   This will be setup automatically for you in `Ueberauth.Strategy.Auth0`.
   These options are only useful for usage outside the normal callback phase of Ueberauth.
   """
-  def client(conn, opts \\ []) do
+  def client(opts \\ []) do
     otp_app = Keyword.get(opts, :otp_app)
+    conn = Keyword.get(opts, :conn)
 
-    conn
-    |> options(otp_app)
+    options(otp_app, conn)
     |> Keyword.merge(opts)
     |> Client.new()
   end
@@ -95,18 +95,18 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
   @doc """
   Provides the authorize url for the request phase of Ueberauth. No need to call this usually.
   """
-  def authorize_url!(conn, params \\ [], opts \\ []) do
-    conn
-    |> client(opts)
+  def authorize_url!(params \\ [], opts \\ []) do
+    opts
+    |> client()
     |> Client.authorize_url!(params)
   end
 
-  def get_token!(conn, params \\ [], opts \\ []) do
+  def get_token!(params \\ [], opts \\ []) do
     otp_app = Keyword.get(opts, :otp_app)
+    conn = Keyword.get(opts, :conn)
 
     client_secret =
-      conn
-      |> options(otp_app)
+      options(otp_app, conn)
       |> Keyword.get(:client_secret)
 
     params = Keyword.merge(params, client_secret: client_secret)
@@ -117,6 +117,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
       opts
       |> Keyword.get(:client_options, [])
       |> Keyword.merge(otp_app: otp_app)
+      |> Keyword.merge(conn: conn)
 
     Client.get_token(client(client_options), params, headers, opts)
   end
