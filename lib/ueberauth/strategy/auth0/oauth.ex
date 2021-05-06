@@ -154,7 +154,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuth do
         else
           {:exported, false} ->
             raise("""
-            When using `:from_config`, the given module should export 3 functions:
+            When using `:config_from`, the given module should export 3 functions:
             - `get_domain/1`
             - `get_client_id/1`
             - `get_client_secret/1`
