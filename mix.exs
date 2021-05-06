@@ -32,7 +32,8 @@ defmodule UeberauthAuth0.Mixfile do
       # Type checking
       dialyzer: [
         plt_core_path: "_build/#{Mix.env()}"
-      ]
+      ],
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
@@ -89,4 +90,7 @@ defmodule UeberauthAuth0.Mixfile do
       }
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/configs"]
+  defp elixirc_paths(_), do: ["lib"]
 end

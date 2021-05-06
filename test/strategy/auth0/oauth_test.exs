@@ -21,10 +21,10 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
     end
   end
 
-  describe "when custom/computed configurations are used" do
+  describe "when right custom/computed configurations are used" do
     setup do
-      Mix.Config.read!("test/support/config_from.ex")
-      {:ok, %{client: client()}}
+      load_configurations("test/configs/config_from.exs")
+      {:ok, %{client: client(otp_app: :ueberauth, conn: %Plug.Conn{})}}
     end
 
     test "creates correct client", %{client: client} do
@@ -32,9 +32,30 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
     end
 
     test "raises when there is no configuration" do
-      assert_raise(RuntimeError, ~r/^Expected to find settings under.*/, fn ->
-        client(otp_app: :unknown_auth0_otp_app)
-      end)
+      assert_raise(
+        RuntimeError,
+        ~r/^When using `:config_from`, the given module should export 3 functions*/,
+        fn ->
+          client(otp_app: :unknown_auth0_otp_app)
+        end
+      )
+    end
+  end
+
+  describe "when bad custom/computed configurations are used" do
+    setup do
+      load_configurations("test/configs/bad_config_from.exs")
+      {:ok, %{client: client()}}
+    end
+
+    test "raises when there is bad ConfigFrom module" do
+      assert_raise(
+        RuntimeError,
+        ~r/^When using `:config_from`, the given module should export 3 functions*/,
+        fn ->
+          client(otp_app: :unknown_auth0_otp_app)
+        end
+      )
     end
   end
 
@@ -46,5 +67,11 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
     assert client.authorize_url == "https://#{@test_domain}/authorize"
     assert client.token_url == "https://#{@test_domain}/oauth/token"
     assert client.site == "https://#{@test_domain}"
+  end
+
+  defp load_configurations(path) do
+    path
+    |> Mix.Config.read!()
+    |> Application.put_all_env()
   end
 end
