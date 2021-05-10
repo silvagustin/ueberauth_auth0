@@ -5,36 +5,40 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
 
   @test_domain "example-app.auth0.com"
 
-  #describe "when default configurations are used" do
-  #  setup do
-  #    {:ok, %{client: client()}}
-  #  end
-#
-  #  test "creates correct client", %{client: client} do
-  #    asserts_client_creation(client)
-  #  end
-#
-  #  test "raises when there is no configuration" do
-  #    assert_raise(RuntimeError, ~r/^Expected to find settings under.*/, fn ->
-  #      client(otp_app: :unknown_auth0_otp_app)
-  #    end)
-  #  end
-  #end
+  describe "when default configurations are used" do
+    setup do
+      Config.Reader.read!("test/configs/default.exs")
+      {:ok, %{client: client()}}
+    end
 
-  #describe "when right custom/computed configurations are used" do
-  #  setup do
-  #    load_configurations("config_from")
-  #    {:ok, %{client: client(otp_app: :ueberauth, conn: %Plug.Conn{})}}
-  #  end
-#
-  #  test "creates correct client", %{client: client} do
-  #    asserts_client_creation(client)
-  #  end
-  #end
+    test "creates correct client", %{client: client} do
+      asserts_client_creation(client)
+    end
+
+    test "raises when there is no configuration" do
+      assert_raise(RuntimeError, ~r/^Expected to find settings under.*/, fn ->
+        client(otp_app: :unknown_auth0_otp_app)
+      end)
+    end
+  end
+
+  describe "when right custom/computed configurations are used" do
+    setup do
+      Config.Reader.read_imports!("test/configs/config_from.exs", imports: ["test/support/config_from.ex"])
+      {:ok, %{client: client(otp_app: :ueberauth, conn: %Plug.Conn{})}}
+    end
+
+    test "creates correct client", %{client: client} do
+      asserts_client_creation(client)
+    end
+  end
 
   describe "when bad custom/computed configurations are used" do
     setup do
-      load_configurations("bad_config_from")
+      "test/configs/bad_config_from.exs"
+      |> Config.Reader.read!()
+      |> Application.put_all_env()
+
       {:ok, %{client: client()}}
     end
 
@@ -57,14 +61,5 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
     assert client.authorize_url == "https://#{@test_domain}/authorize"
     assert client.token_url == "https://#{@test_domain}/oauth/token"
     assert client.site == "https://#{@test_domain}"
-  end
-
-  defp load_configurations(filename) do
-    path = "test/configs/#{filename}.exs"
-    imports = [imports: ["test/support/#{filename}.ex"]]
-
-    path
-    |> Config.Reader.read!(imports)
-    |> Application.put_all_env()
   end
 end
