@@ -7,7 +7,6 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
 
   describe "when default configurations are used" do
     setup do
-      Config.Reader.read!("test/configs/default.exs")
       {:ok, %{client: client()}}
     end
 
