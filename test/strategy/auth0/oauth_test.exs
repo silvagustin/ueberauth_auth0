@@ -71,7 +71,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
 
   defp load_configurations(path) do
     path
-    |> Mix.Config.read!()
+    |> Config.Reader.read!()
     |> Application.put_all_env()
   end
 end
