@@ -23,7 +23,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
 
   describe "when right custom/computed configurations are used" do
     setup do
-      Config.Reader.read_imports!("test/configs/config_from.exs", imports: ["test/support/config_from.ex"])
+      load_configs("config_from")
       {:ok, %{client: client(otp_app: :ueberauth, conn: %Plug.Conn{})}}
     end
 
@@ -34,10 +34,7 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
 
   describe "when bad custom/computed configurations are used" do
     setup do
-      "test/configs/bad_config_from.exs"
-      |> Config.Reader.read!()
-      |> Application.put_all_env()
-
+      load_configs("bad_config_from")
       {:ok, %{client: client()}}
     end
 
@@ -60,5 +57,11 @@ defmodule Ueberauth.Strategy.Auth0.OAuthTest do
     assert client.authorize_url == "https://#{@test_domain}/authorize"
     assert client.token_url == "https://#{@test_domain}/oauth/token"
     assert client.site == "https://#{@test_domain}"
+  end
+
+  defp load_configs(filename) do
+    "test/configs/#{filename}.exs"
+    |> Config.Reader.read!()
+    |> Application.put_all_env()
   end
 end
